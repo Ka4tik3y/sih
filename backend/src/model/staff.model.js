@@ -15,8 +15,8 @@ const staffSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    age: {
-      type: Number,
+    institution: {
+      type: String,
       required: true,
     },
     email: {
