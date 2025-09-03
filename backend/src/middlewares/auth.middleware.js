@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
 import Staff from "../model/staff.model.js";
+import Student from "../model/student.model.js";
 
-export const staffAuthMiddleware = async (req, res, next) => {
+export const authMiddleware = async (req, res, next) => {
   try {
     const token = req.cookies?.jwt || req.headers.authorization?.split(" ")[1];
 
@@ -17,13 +18,20 @@ export const staffAuthMiddleware = async (req, res, next) => {
       return res.status(401).json({ message: "Unauthorized - Invalid token" });
     }
 
-    const staff = await Staff.findById(decoded.userId).select("-password");
+    let user = null;
 
-    if (!staff) {
-      return res.status(404).json({ message: "Staff not found" });
+    if (decoded.role === "student") {
+      user = await Student.findById(decoded.userId).select("-password");
+    } else {
+      user = await Staff.findById(decoded.userId).select("-password");
     }
 
-    req.staff = staff;
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    req.user = user;
+    req.role = decoded.role;
 
     next();
   } catch (error) {

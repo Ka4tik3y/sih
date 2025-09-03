@@ -20,7 +20,7 @@ const studentSchema = new mongoose.Schema({
     },
     age: {
         type: Number,
-        required: true,
+        required: false,
 
     },
     email: {
@@ -42,6 +42,11 @@ const studentSchema = new mongoose.Schema({
         type: String,
         enum: ["student"],
         default: "student",
+    },
+    location: {
+      type: String,
+      default: "",
+      required: true,
     }
 }, {
     timestamps: true

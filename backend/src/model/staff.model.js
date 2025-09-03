@@ -29,6 +29,11 @@ const staffSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    location: {
+      type: String,
+      default: "",
+      required: true,
+    },
     password: { type: String, required: true, minLength: 8 },
     role: { type: String, enum: ["staff", "admin"], default: "staff" },
   },
