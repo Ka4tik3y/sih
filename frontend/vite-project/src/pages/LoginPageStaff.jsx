@@ -24,6 +24,9 @@ export default function AdminLogin() {
         { withCredentials: true }
       );
       if (res.data.success) {
+        // Store user info in localStorage for dashboard
+        localStorage.setItem('user', JSON.stringify(res.data.user));
+        localStorage.setItem('userRole', 'admin');
         alert("Login successful!");
         navigate("/dashboard");
       }

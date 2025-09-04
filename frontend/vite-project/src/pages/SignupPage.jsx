@@ -38,7 +38,7 @@ export default function SignUpPage() {
       if (!res.ok) throw new Error(data.message || "Signup failed");
 
       alert("Student registered successfully!");
-      navigate("/home");
+      navigate("/student-login");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -54,9 +54,7 @@ export default function SignUpPage() {
         </h1>
 
         {error && (
-          <div className="mb-4 text-red-600 font-medium text-center">
-            {error}
-          </div>
+          <div className="mb-4 text-red-600 font-medium text-center">{error}</div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -64,7 +62,7 @@ export default function SignUpPage() {
             { name: "fullName", label: "Full Name", type: "text" },
             { name: "userName", label: "Username", type: "text" },
             { name: "education", label: "Education", type: "text" },
-            { name: "institution", label: "Institution", type: "select" },
+            { name: "institution", label: "Institution", type: "text" },
             { name: "age", label: "Age", type: "number" },
             { name: "email", label: "Email", type: "email" },
             { name: "phonenumber", label: "Phone Number", type: "text" },
@@ -75,31 +73,14 @@ export default function SignUpPage() {
               <label className="block text-gray-700 mb-1 font-medium">
                 {field.label}
               </label>
-              {field.type === "select" ? (
-                <select
-                  name={field.name}
-                  value={formData[field.name]}
-                  onChange={handleChange}
-                  required
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                >
-                  <option value="">Select your college</option>
-                  <option value="USAR">USAR</option>
-                  <option value="CU">CU</option>
-                  <option value="NIT HAMIRPUR">NIT HAMIRPUR</option>
-                  <option value="NIT Trichy">NIT Trichy</option>
-                  <option value="IIT JODHPUR">IIT JODHPUR</option>
-                </select>
-              ) : (
-                <input
-                  type={field.type}
-                  name={field.name}
-                  value={formData[field.name]}
-                  onChange={handleChange}
-                  required={field.name !== "age"}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                />
-              )}
+              <input
+                type={field.type}
+                name={field.name}
+                value={formData[field.name]}
+                onChange={handleChange}
+                required={field.name !== "age"}
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+              />
             </div>
           ))}
 
@@ -117,7 +98,7 @@ export default function SignUpPage() {
             Already have an account?{" "}
             <button
               className="text-orange-600 hover:underline font-semibold"
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/student-login")}
             >
               Login
             </button>
