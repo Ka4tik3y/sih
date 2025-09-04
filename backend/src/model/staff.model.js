@@ -2,37 +2,10 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 const staffSchema = new mongoose.Schema(
   {
-    fullName: {
-      type: String,
-      required: true,
-    },
-    userName: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    education: {
-      type: String,
-      required: true,
-    },
-    institution: {
-      type: String,
-      required: true,
-    },
     email: {
       type: String,
       required: true,
       unique: true,
-    },
-    phonenumber: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    location: {
-      type: String,
-      default: "",
-      required: true,
     },
     password: { type: String, required: true, minLength: 8 },
     role: { type: String, enum: ["staff", "admin"], default: "staff" },
@@ -46,7 +19,7 @@ staffSchema.pre("save", async function (next) {
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-    // next(); 
+    next(); 
   } catch (error) {
     return next(error);
   }

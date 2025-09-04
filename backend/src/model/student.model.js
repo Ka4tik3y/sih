@@ -42,6 +42,8 @@ const studentSchema = new mongoose.Schema({
         type: String,
         enum: ["student"],
         default: "student",
+        required
+: false,
     },
     location: {
       type: String,
@@ -58,7 +60,7 @@ studentSchema.pre("save", async function (next) {
     try {
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);
-        // next(); 
+        next(); 
     } catch (error) {
         return next(error);
     }
