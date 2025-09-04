@@ -6,26 +6,33 @@ dotenv.config();
 const seedStaff = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    try {
-      await mongoose.connection.db
-        .collection("staffs")
-        .dropIndex("phoneNumber_1");
-      console.log("Dropped old phoneNumber index");
-    } catch (err) {
-      if (err.codeName === "IndexNotFound") {
-        console.log("No old phoneNumber index found");
-      } else {
-        throw err;
-      }
-    }
-    const email = "admin@disasterready.com";
+    // try {
+    //   await mongoose.connection.db
+    //     .collection("staffs")
+    //     .dropIndex("phoneNumber_1");
+    //   console.log("Dropped old phoneNumber index");
+    // } catch (err) {
+    //   if (err.codeName === "IndexNotFound") {
+    //     console.log("No old phoneNumber index found");
+    //   } else {
+    //     throw err;
+    //   }
+    // }
+    const email = "admin@iitd.ac.in";
     const password = "Admin@123";
+    const institution = "USAR";
+    const role = "staff";
     const existingStaff = await Staff.findOne({ email });
     if (existingStaff) {
       console.log("Staff already exists");
       process.exit(0);
     }
-    const staff = new Staff({ email, password, role: "admin" });
+   const staff = new Staff({
+  email,
+  password,
+  role,
+  institution,
+});
     await staff.save();
     console.log("Staff seeded successfully");
     process.exit(0);

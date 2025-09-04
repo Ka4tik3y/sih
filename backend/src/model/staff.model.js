@@ -1,17 +1,13 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
-const staffSchema = new mongoose.Schema(
-  {
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    password: { type: String, required: true, minLength: 8 },
-    role: { type: String, enum: ["staff", "admin"], default: "staff" },
-  },
-  { timestamps: true }
-);
+const staffSchema = new mongoose.Schema({
+  
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true, minLength: 8 },
+  role: { type: String, enum: ["staff"], default: "staff" },
+  institution: { type: String, required: true }, 
+});
+
 staffSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     return next();
