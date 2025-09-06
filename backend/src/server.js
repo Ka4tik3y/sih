@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -16,7 +17,6 @@ app.use(
   })
 );
 
-dotenv.config();
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", authRoutes);

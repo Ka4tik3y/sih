@@ -1,6 +1,6 @@
 import Staff from "../model/staff.model.js";
-import jwt from "jsonwebtoken";
 import Student from "../model/student.model.js";
+import jwt from "jsonwebtoken";
 
 export const signupStudent = async (req, res) => {
   const {
@@ -11,8 +11,9 @@ export const signupStudent = async (req, res) => {
     phonenumber,
     education,
     institution,
-    location
+    location,
   } = req.body;
+
   try {
     if (
       !email ||
@@ -42,6 +43,7 @@ export const signupStudent = async (req, res) => {
     if (existingStudent) {
       return res.status(400).json({ message: "Email already exists" });
     }
+
     const newStudent = await Student.create({
       email,
       password,
@@ -51,20 +53,22 @@ export const signupStudent = async (req, res) => {
       phonenumber,
       education,
       institution,
-      location
+      location,
     });
 
     const token = jwt.sign(
-      { userId: newStudent._id, role: newStudent.role },
+      { userId: newStudent._id, role: "student", institution },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
+
     res.cookie("jwt", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+
     res.status(201).json({
       success: true,
       message: "Student created successfully",
@@ -78,31 +82,18 @@ export const signupStudent = async (req, res) => {
 
 export const StudentLogin = async (req, res) => {
   const { email, password } = req.body;
-
   try {
-    console.log("Login request body:", req.body);
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Email and password are required" });
-    }
-    let user = await Staff.findOne({ email });
-    let role = "staff";
-    if (!user) {
-      user = await Student.findOne({ email });
-      role = "student";
-    }
-    if (!user) {
-      return res.status(404).json({ message: "Email does not match" });
-    }
+    const user = await Student.findOne({ email });
+    if (!user) return res.status(404).json({ message: "Email does not match" });
     const isPasswordValid = await user.matchPassword(password);
     if (!isPasswordValid) {
       return res.status(400).json({ message: "Invalid password" });
     }
-    console.log(role);
-    const token = jwt.sign({ userId: user._id, role }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { userId: user._id, role: "student", institution: user.institution },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
     res.cookie("jwt", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -113,59 +104,42 @@ export const StudentLogin = async (req, res) => {
       success: true,
       message: "Login successful",
       user,
-      token,
     });
   } catch (error) {
-    console.error("Error in login:", error.message);
-    return res.status(500).json({ message: "Internal(L) server error" });
+    console.error("Error in student login:", error.message);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
 export const StaffLogin = async (req, res) => {
   const { email, password } = req.body;
-
   try {
-    console.log("Login request body:", req.body);
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Email and password are required" });
-    }
-    let user = await Staff.findOne({ email });
-    let role = "staff";
-    if (!user) {
-      user = await Student.findOne({ email });
-      role = "student";
-    }
-    if (!user) {
-      return res.status(404).json({ message: "Email does not match" });
-    }
+    const user = await Staff.findOne({ email });
+    if (!user) return res.status(404).json({ message: "Email does not match" });
+
     const isPasswordValid = await user.matchPassword(password);
     if (!isPasswordValid) {
       return res.status(400).json({ message: "Invalid password" });
     }
-    console.log(role);
-    const token = jwt.sign({ userId: user._id, role }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { userId: user._id, role: user.role, institution: user.institution },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
     res.cookie("jwt", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    // console.log("User role from DB:", req.user.role);
-// console.log("Role from token:", req);
     return res.status(200).json({
       success: true,
       message: "Login successful",
       user,
-      token,
     });
-
   } catch (error) {
-    console.error("Error in login:", error.message);
-    return res.status(500).json({ message: "Internal(L) server error" });
+    console.error("Error in staff login:", error.message);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -179,6 +153,24 @@ export const logout = async (req, res) => {
     return res.status(200).json({ message: "Logout successful" });
   } catch (error) {
     console.error("Error in logout:", error.message);
-    return res.status(500).json({ message: "Internal(L) server error" });
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const isloggedin = async (req, res) => {
+  try {
+    const token = req.cookies.jwt;
+    if (!token) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return res.status(200).json({
+      success: true,
+      message: "Authenticated",
+      user: decoded, // contains userId, role, institution
+    });
+  } catch (error) {
+    console.error("Error in isloggedin:", error.message);
+    return res.status(401).json({ message: "Invalid or expired token" });
   }
 };

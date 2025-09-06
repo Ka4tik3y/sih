@@ -111,11 +111,6 @@ export default function OptionPage() {
             </button>
           )}
         </div>
-        {/* <div className="text-center mt-6">
-          <button className="text-gray-600 hover:text-gray-800 transition-colors">
-            ← Back to Login
-          </button>
-        </div> */}
       </div>
     </div>
   );

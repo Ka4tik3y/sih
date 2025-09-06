@@ -1,107 +1,118 @@
+
 import Quiz from "../model/quiz.model.js";
 import QuizAttempt from "../model/quizAttempt.model.js";
-
+import Student from "../model/student.model.js";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import dotenv from "dotenv";
+dotenv.config();
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export const createQuiz = async (req, res) => {
   try {
-    if (req.role !== "staff" && req.role !== "admin") {
-      return res
-        .status(403)
-        .json({ message: "Only staff/admin can create quizzes" });
+    const { title, category, questions } = req.body;
+    if (!title || !category || !questions || !Array.isArray(questions)) {
+      return res.status(400).json({ message: "Invalid quiz data" });
     }
-
-    const { title, description, category, questions } = req.body;
-
-    if (!title || !questions || questions.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "Title and at least one question required" });
-    }
-
-    const quiz = await Quiz.create({
+    const quiz = new Quiz({
       title,
-      description,
       category,
-      questions,
       createdBy: req.user._id,
+      questions,
     });
-
+    await quiz.save();
     res.status(201).json({ success: true, quiz });
-  } catch (error) {
-    console.error("Error creating quiz:", error);
-    res.status(500).json({ message: "Internal server error" });
+  } catch (err) {
+    res.status(500).json({ message: "Error creating quiz", error: err.message });
+  }
+};
+
+export const generateQuiz = async (req, res) => {
+  try {
+    const { category, numQuestions = 5 } = req.body;
+    if (!category) {
+      return res.status(400).json({ message: "Category is required" });
+    }
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const prompt = `
+      Generate ${numQuestions} multiple-choice questions about ${category}.
+      Return JSON only in this format:
+      [
+        {
+          "text": "Question here?",
+          "options": ["A", "B", "C", "D"],
+          "correctAnswer": "A"
+        }
+      ]
+    `;
+    const result = await model.generateContent(prompt);
+    let raw = result.response.text().trim();
+    if (raw.startsWith("```")) {
+      raw = raw.replace(/```json|```/g, "").trim();
+    }
+    const quizData = JSON.parse(raw);
+    const quiz = new Quiz({
+      title: `${category} Quiz`,
+      category,
+      createdBy: req.user._id,
+      questions: quizData,
+    });
+    await quiz.save();
+    res.status(201).json({ success: true, quiz });
+  } catch (err) {
+    console.error("Gemini quiz generation failed:", err);
+    res
+      .status(500)
+      .json({ message: "Error generating quiz", error: err.message });
   }
 };
 
 export const getQuizzes = async (req, res) => {
   try {
-    const quizzes = await Quiz.find().select(
-      "title description category createdAt"
-    );
-    res.status(200).json({ success: true, quizzes });
-  } catch (error) {
-    console.error("Error fetching quizzes:", error);
-    res.status(500).json({ message: "Internal server error" });
+    const quizzes = await Quiz.find().select("title category questions");
+    res.json({ success: true, quizzes });
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching quizzes" });
   }
 };
 
 export const submitQuiz = async (req, res) => {
   try {
-    if (req.role !== "student") {
-      return res
-        .status(403)
-        .json({ message: "Only students can attempt quizzes" });
-    }
-
     const { quizId, answers } = req.body;
-
     const quiz = await Quiz.findById(quizId);
-    if (!quiz) {
-      return res.status(404).json({ message: "Quiz not found" });
-    }
-
+    if (!quiz) return res.status(404).json({ message: "Quiz not found" });
     let score = 0;
-    const processedAnswers = quiz.questions.map((q, index) => {
-      const studentAnswer = answers.find(
-        (a) => a.questionId === q._id.toString()
-      );
-
-      if (!studentAnswer) {
-        return {
-          questionId: q._id,
-          selectedOption: null,
-          isCorrect: false,
-        };
-      }
-
-      const correctOption = q.options.find((opt) => opt.isCorrect);
-
-      const isCorrect = studentAnswer.selectedOption === correctOption.text;
+    const evaluated = quiz.questions.map((q, idx) => {
+      const userAnswer = answers.find((a) => a.questionIndex === idx);
+      const selected = userAnswer ? userAnswer.selected : null;
+      const isCorrect = selected === q.correctAnswer;
       if (isCorrect) score++;
-
-      return {
-        questionId: q._id,
-        selectedOption: studentAnswer.selectedOption,
-        isCorrect,
-      };
+      return { question: q.text, selected, isCorrect };
     });
-
-    const attempt = await QuizAttempt.create({
+    const attempt = new QuizAttempt({
       student: req.user._id,
       quiz: quizId,
-      answers: processedAnswers,
+      answers: evaluated,
       score,
     });
+    await attempt.save();
+    res.json({ success: true, score, attempt });
+  } catch (err) {
+    res.status(500).json({ message: "Error submitting quiz", error: err.message });
+  }
+};
 
-    res.status(201).json({
-      success: true,
-      message: "Quiz submitted successfully",
-      score,
-      total: quiz.questions.length,
-      attempt,
-    });
-  } catch (error) {
-    console.error("Error submitting quiz:", error);
-    res.status(500).json({ message: "Internal server error" });
+export const getInstitutionResults = async (req, res) => {
+  try {
+    const staff = req.user; 
+    const students = await Student.find({ institution: staff.institution });
+    const studentIds = students.map((s) => s._id);
+    const attempts = await QuizAttempt.find({ student: { $in: studentIds } })
+      .populate("student", "fullName email institution")
+      .populate("quiz", "title category");
+    res.json({ success: true, attempts });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error fetching results", error: err.message });
   }
 };
