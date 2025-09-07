@@ -4,6 +4,7 @@ import Sidebar from "../components/Sidebar.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AlertsHub from "../components/AlertsHub.jsx";
+import WeatherCard from "../components/WeatherCard.jsx";
 
 const SAMPLE_NEWS = [
   { title: "Flood alert in low-lying areas", date: "2025-09-05", body: "Heavy rains expected for the next 48 hours..." },
@@ -15,18 +16,6 @@ const DISASTER_PHOTOS = [
   { src: "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&w=1000&q=80", alt: "Rescue", title: "Rescue Operations", description: "Saving lives in critical situations" },
   { src: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?auto=format&fit=crop&w=1000&q=80", alt: "Medical", title: "Medical Aid", description: "Providing healthcare in disaster zones" },
   { src: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1000&q=80", alt: "Food", title: "Food Distribution", description: "Ensuring no one goes hungry" },
-];
-const ALERTS = [
-  { name: "Cyclone", icon: "/icons/cyclone.png", route: "/alerts/cyclone" },
-  { name: "Rainfall", icon: "/icons/rainfall.png", route: "/alerts/rainfall" },
-  { name: "Flood", icon: "/icons/flood.png", route: "/alerts/flood" },
-  { name: "Earthquake", icon: "/icons/earthquake.png", route: "/alerts/earthquake" },
-  { name: "Tsunami", icon: "/icons/tsunami.png", route: "/alerts/tsunami" },
-  { name: "Landslide", icon: "/icons/landslide.png", route: "/alerts/landslide" },
-  { name: "Avalanche", icon: "/icons/avalanche.png", route: "/alerts/avalanche" },
-  { name: "Drought", icon: "/icons/drought.png", route: "/alerts/drought" },
-  { name: "Thunderstorm", icon: "/icons/thunderstorm.png", route: "/alerts/thunderstorm" },
-  { name: "Wildfire", icon: "/icons/wildfire.png", route: "/alerts/wildfire" },
 ];
 export default function HomePage() {
   const [newsIndex, setNewsIndex] = useState(0);
@@ -58,6 +47,9 @@ export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 font-sans">
       <Navbar />
+      <div className="absolute top-20 right-4">
+        <WeatherCard />
+      </div>
       <div className="flex flex-1">
         <Sidebar />
         <main className="flex-1 p-6 md:p-8 overflow-auto">
