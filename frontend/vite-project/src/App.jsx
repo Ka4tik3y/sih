@@ -7,24 +7,30 @@ import LoginPageStudent from "./pages/LoginPageStudent.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import ModulesPage from "./pages/ModulesPage.jsx";
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Public routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/option" element={<OptionPage />} />
         <Route path="/student-signup" element={<SignUpPage />} />
         <Route path="/admin-login" element={<LoginPageStaff />} />
         <Route path="/student-login" element={<LoginPageStudent />} />
-
-        {/* Protected routes */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/modules"
+          element={
+            <ProtectedRoute>
+              <ModulesPage />
             </ProtectedRoute>
           }
         />

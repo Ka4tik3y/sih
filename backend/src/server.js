@@ -6,8 +6,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
+import moduleRoutes from "./routes/moduleRoutes.js";
 dotenv.config();
-
 const app = express();
 const PORT = process.env.PORT || 5001;
 app.use(
@@ -16,13 +16,12 @@ app.use(
     credentials: true,
   })
 );
-
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", authRoutes);
-// app.use("/api/home", homeRoute);
 app.use("/api/quizzes", quizRoutes);
-
+app.use("/uploads", express.static("uploads"));
+app.use("/api/modules", moduleRoutes);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   connectDB()

@@ -13,12 +13,12 @@ import cyclone1 from "../assets/cyclone1.png";
 import flood1 from "../assets/flood1.png";
 
 const ALERTS = [
-  { name: "Cyclone", icon: cyclone1, link: "https://mausam.imd.gov.in/imd_latest/contents/cyclone.php" },
-  { name: "Rainfall", icon: rainfall, link: "https://mausam.imd.gov.in/" },
-  { name: "Flood", icon: flood1, link: "https://mausam.imd.gov.in/imd_latest/contents/flash_flood.php" },
-  { name: "Earthquake", icon: earthquake, link: "https://riseq.seismo.gov.in/riseq/earthquake" },
-  { name: "Tsunami", icon:tsunami, link: "https://incois.gov.in/site/index.jsp" },
-  { name: "Landslide", icon:landslide, link: "https://www.gsi.gov.in/webcenter/portal/OCBIS/pageGeoInfo/pageLANDSLIDEHAZRD?_adf.ctrl-state=osayshkkp_63" },
+  { name: "Cyclone", icon: cyclone1, link: "https://mausam.imd.gov.in/imd_latest/contents/cyclone.php#." },
+  { name: "Rainfall", icon: rainfall, link: "https://mausam.imd.gov.in/#." },
+  { name: "Flood", icon: flood1, link: "https://mausam.imd.gov.in/imd_latest/contents/flash_flood.php#." },
+  { name: "Earthquake", icon: earthquake, link: "https://riseq.seismo.gov.in/riseq/earthquake#." },
+  { name: "Tsunami", icon:tsunami, link: "https://incois.gov.in/site/index.jsp#." },
+  { name: "Landslide", icon:landslide, link: "https://www.gsi.gov.in/webcenter/portal/OCBIS/pageGeoInfo/pageLANDSLIDEHAZRD?_adf.ctrl-state=osayshkkp_63#." },
   { name: "Avalanche", icon: avalanche, link: "https://drdo.gov.in/drdo/avalanche-warning-bulletin" },
   { name: "Drought", icon:drought, link: "https://agriwelfare.gov.in/" },
   { name: "Thunderstorm", icon: thunderstorm, link: "https://srf.tropmet.res.in/srf/ts_prediction_system/index.php" },

@@ -35,6 +35,11 @@ export default function LandingPage() {
   }, []);
   return (
     <div className="min-h-screen bg-gray-100 p-4">
+     <a
+  href="tel:112"
+  className="absolute top-4 right-4 bg-orange-500 text-white py-3 px-6 rounded font-bold shadow-lg text-lg hover:bg-orange-600 transition-colors">
+   Emergency Contact
+</a>
       <div className="max-w-md mx-auto pt-8">
         <div className="flex items-center mb-6">
           <div className="w-8 h-8 bg-orange-500 rounded mr-3 flex items-center justify-center">

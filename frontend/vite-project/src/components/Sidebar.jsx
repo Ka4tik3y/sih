@@ -13,8 +13,9 @@ export default function Sidebar() {
         <aside className="bg-gradient-to-b from-orange-500 to-orange-600 text-white w-60 p-4 min-h-screen box-border">
             <nav className="flex flex-col gap-2">
                 <NavLink to="/HomePage" className={({ isActive }) => linkClass(isActive)}> Home</NavLink>
-                <NavLink to="" className={({ isActive }) => linkClass(isActive)}> Quizzes</NavLink>
-                <NavLink to="" className={({ isActive }) => linkClass(isActive)}> Modules</NavLink>
+                <NavLink to="/modules" className={({ isActive }) => linkClass(isActive)}> Modules and Quizzes</NavLink>
+                <NavLink to="" className={({ isActive }) => linkClass(isActive)}>   Stories</NavLink>
+                <NavLink to="" className={({ isActive }) => linkClass(isActive)}> Virtual Drills</NavLink>
                 <div className="mt-2">
                     <button
                         onClick={() => setOpen(v => !v)}
